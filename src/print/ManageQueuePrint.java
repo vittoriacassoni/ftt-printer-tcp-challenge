@@ -37,7 +37,7 @@ public class ManageQueuePrint {
             threads = new ArrayList<>();
             for (int i = 0; i < 5; i++) {
                 ThreadManageQueuePrint thread = new ThreadManageQueuePrint();
-                thread.setName("Thread " + (i + 1));
+                thread.setName("Impressora " + (i + 1));
                 thread.start();
                 threads.add(thread);
             }

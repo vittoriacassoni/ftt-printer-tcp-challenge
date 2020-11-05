@@ -3,6 +3,7 @@ package connections;
 import print.ManageQueuePrint;
 import tos.MessageTO;
 
+import javax.annotation.processing.SupportedSourceVersion;
 import java.io.IOException;
 import java.io.InputStream;
 import java.net.Socket;
@@ -20,7 +21,7 @@ public class ClientManager implements Runnable {
     public void run() {
         try {
             machine.initialize();
-            System.out.println(clientSocket.hashCode() + ": Conexão cliente estabelecida");
+            System.out.println("Conexão cliente: " + clientSocket.hashCode() + " estabelecida");
             InputStream stream = clientSocket.getInputStream();
             try {
                 int bytesLidos = 0;
@@ -42,18 +43,18 @@ public class ClientManager implements Runnable {
             }
         } catch (IOException ex) {
             if (ex.getMessage().equals("Socket closed")) {
-                System.out.println(clientSocket.hashCode() + ": Conexão cliente closeda");
+                System.out.println("Conexão cliente: " + clientSocket.hashCode() + " fechada");
             } else {
                 Logger.getLogger(ClientManager.class.getName()).log(Level.SEVERE, null, ex);
             }
         }
 
     }
-    
+
     public Socket getClientSocket() {
         return clientSocket;
     }
-    
+
     public void setClientSocket(Socket clientSocket) {
         this.clientSocket = clientSocket;
     }
@@ -66,23 +67,20 @@ public class ClientManager implements Runnable {
 
     void identify() {
         if ((clientSocket.isConnected()) && (!clientSocket.isClosed())) {
-            System.out.println(clientSocket.hashCode() + ": Conexão cliente estabelecida.");
+            System.out.println(" - Conexão cliente: " + clientSocket.hashCode() + " estabelecida");
         } else {
-            System.out.println(clientSocket.hashCode() + ": Conexão cliente closeda.");
+            System.out.println(" - Conexão cliente: " + clientSocket.hashCode() + " fechada");
         }
     }
 
-   private void prepareMessageReception(List<MessageTO> mensagens) {
+    private void prepareMessageReception(List<MessageTO> mensagens) {
         for (MessageTO msg : mensagens) {
             switch (msg.getOpCode()) {
                 case "I":
                     ManageQueuePrint.getInstance().addMessagePrint(msg.getMessage());
                     break;
-                case "S":
-                    System.out.println(clientSocket.hashCode() + ": Mensagem de status recebida: " + msg.getMessage());
-                    break;
                 default:
-                    System.out.println(clientSocket.hashCode() + ": Mensagem desconhecida recebida: " + msg.getMessage());
+                    System.out.println("Cliente: " + clientSocket.hashCode() + " - Mensagem desconhecida recebida: " + msg.getMessage());
                     break;
             }
         }

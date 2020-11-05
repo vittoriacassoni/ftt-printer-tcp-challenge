@@ -3,7 +3,9 @@ package connections;
 import java.io.IOException;
 import java.net.ServerSocket;
 import java.net.Socket;
+import java.util.ArrayList;
 import java.util.Collections;
+import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -19,25 +21,26 @@ public class PrinterServer extends Thread {
         try {
             serverActive = true;
             server = new ServerSocket(port);
+
             while (serverActive) {
-                System.out.println("Aguardando nova conexão com PrinterServer...");
                 Socket socket = server.accept();
-                addClienteTreatment(socket);
+                addClientTreatment(socket);
                 Thread.sleep(10);
             }
+
             if (!server.isClosed()) {
                 server.close();
             }
         } catch (InterruptedException | IOException ex) {
-            if (ex.getMessage().equals("socket closed")) {
-                System.out.println("Conexão server closeda...");
+            if (ex.getMessage().equals("Socket closed")) {
+                System.out.println("Conexão server fechada!!!");
             } else {
                 Logger.getLogger(PrinterServer.class.getName()).log(Level.SEVERE, null, ex);
             }
         }
     }
 
-    private void addClienteTreatment(Socket socket) {
+    private void addClientTreatment(Socket socket) {
         ClientManager manager = new ClientManager();
         manager.setClientSocket(socket);
         clients.add(manager);
@@ -58,8 +61,9 @@ public class PrinterServer extends Thread {
     }
 
     public void list() {
-        for (ClientManager cliente : clients){
-            cliente.identify();
+        System.out.println("Lista de clients -------------------------------------------------------");
+        for (ClientManager client : clients) {
+            client.identify();
         }
     }
 }

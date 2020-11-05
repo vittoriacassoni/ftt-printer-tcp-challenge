@@ -14,7 +14,7 @@ public class ThreadManageQueuePrint extends Thread {
             try {
                 String print = ManageQueuePrint.getInstance().removeMessagePrint();
                 if (print != null) {
-                   printMessage(print);
+                    printMessage(print);
                 }
                 Thread.sleep(1);
             } catch (InterruptedException ex) {
@@ -28,7 +28,7 @@ public class ThreadManageQueuePrint extends Thread {
     }
 
     private void printMessage(String msg) throws InterruptedException {
-        System.out.println("Nova impressão da impressora: " + getName() + " - " + msg);
+        System.out.println("Nova impressão de: " + getName() + " - Impressão: " + msg);
         Thread.sleep(1000);
     }
 }
