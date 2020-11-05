@@ -1,8 +1,12 @@
 package connections;
 
+import print.ManageQueuePrint;
+import tos.MessageTO;
+
 import java.io.IOException;
 import java.io.InputStream;
 import java.net.Socket;
+import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -10,12 +14,12 @@ public class ClientManager implements Runnable {
 
     private Socket clientSocket;
 
-    private MaquinaEstadoRecepcao maquinaRecepcao = new MaquinaEstadoRecepcao();
+    private ReceptionStateMachine machine = new ReceptionStateMachine();
 
     @Override
     public void run() {
         try {
-            maquinaRecepcao.inicializa();
+            machine.initialize();
             System.out.println(clientSocket.hashCode() + ": Conexão cliente estabelecida");
             InputStream stream = clientSocket.getInputStream();
             try {
@@ -24,8 +28,8 @@ public class ClientManager implements Runnable {
                     byte[] dados = new byte[1024];
                     bytesLidos = stream.read(dados);
                     if (bytesLidos > 0) {
-                        List<MessageTO> mensagens = maquinaRecepcao.trataDados(dados, bytesLidos);
-                        trataMensagensRecebidas(mensagens);
+                        List<MessageTO> message = machine.prepareData(dados, bytesLidos);
+                        prepareMessageReception(message);
                     }
                 } while (bytesLidos != -1);
             } finally {
@@ -68,19 +72,19 @@ public class ClientManager implements Runnable {
         }
     }
 
-   /* private void trataMensagensRecebidas(List<MessageTO> mensagens) {
+   private void prepareMessageReception(List<MessageTO> mensagens) {
         for (MessageTO msg : mensagens) {
             switch (msg.getOpCode()) {
                 case "I":
-                    GerenciadorImpressao.getInstancia().adicionaMsgImpressao(msg.getMensagem());
+                    ManageQueuePrint.getInstance().addMessagePrint(msg.getMessage());
                     break;
                 case "S":
-                    System.out.println(clientSocket.hashCode() + ": Mensagem de status recebida: " + msg.getMensagem());
+                    System.out.println(clientSocket.hashCode() + ": Mensagem de status recebida: " + msg.getMessage());
                     break;
                 default:
-                    System.out.println(clientSocket.hashCode() + ": Mensagem desconhecida recebida: " + msg.getMensagem());
+                    System.out.println(clientSocket.hashCode() + ": Mensagem desconhecida recebida: " + msg.getMessage());
                     break;
             }
         }
-    }*/
+    }
 }

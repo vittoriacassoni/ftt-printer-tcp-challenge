@@ -1,11 +1,15 @@
 package connections;
 
+import enums.MachineStateEnum;
+import tos.MessageTO;
+
 import java.nio.ByteBuffer;
 import java.nio.charset.Charset;
 import java.util.LinkedList;
+import java.util.List;
 
 public class ReceptionStateMachine {
-    private EnumstateMaquina state;
+    private MachineStateEnum state;
     private StringBuilder content;
     private MessageTO message;
     private final Charset iso88591charset  = Charset.forName("ISO-8859-1");
@@ -17,16 +21,16 @@ public class ReceptionStateMachine {
             switch (state) {
                 case AGUARDA_STX:
                     if (datas[i] == 0x02) {
-                        state = EnumstateMaquina.AGUARDA_OPCODE;
+                        state = MachineStateEnum.AGUARDA_OPCODE;
                     }
                     break;
                 case AGUARDA_OPCODE:
                     message.setOpCode(new String(datas,i,1));
-                    state = EnumstateMaquina.AGUARDA_ETX;
+                    state = MachineStateEnum.AGUARDA_ETX;
                     break;
                 case AGUARDA_ETX:
                     if (datas[i] == 0x03) {
-                        message.setMensagem(content.toString());
+                        message.setMessage(content.toString());
                         result.add(message);
                         initialize();
                     }
@@ -36,7 +40,7 @@ public class ReceptionStateMachine {
                     }
                     break;
                 default:
-                    state = EnumstateMaquina.AGUARDA_ETX;
+                    state = MachineStateEnum.AGUARDA_ETX;
                     break;
             }
         }
@@ -46,6 +50,6 @@ public class ReceptionStateMachine {
     public void initialize() {
         content = new StringBuilder();
         message = new MessageTO();
-        state = EnumstateMaquina.AGUARDA_STX;
+        state = MachineStateEnum.AGUARDA_STX;
     }
 }
